@@ -1,0 +1,12 @@
+==== Python TCP Port Scanner ====
+
+Target: scanme.nmap.org
+IP Address: 45.33.32.156
+Open Ports Found: 3
+Scan Time: 7.20 seconds
+
+Open Ports
+------------------------
+22     SSH
+53     DNS
+80     HTTP
