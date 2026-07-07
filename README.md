@@ -110,3 +110,10 @@ python-port-scanner/
 ## Disclaimer
 
 This project is intended for educational purposes and should only be used to scan systems you own or have permission to test.
+
+## Usage
+
+```bash
+python3 port_scanner.py
+```
+
