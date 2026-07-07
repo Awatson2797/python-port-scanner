@@ -113,7 +113,20 @@ This project is intended for educational purposes and should only be used to sca
 
 ## Usage
 
+Clone the repository:
+
+```bash
+git clone https://github.com/Awatson2797/python-port-scanner.git
+```
+
+Navigate to the project directory:
+
+```bash
+cd python-port-scanner
+```
+
+Run the application:
+
 ```bash
 python3 port_scanner.py
 ```
-
