@@ -1,5 +1,6 @@
 import socket
 import time
+import argparse
 from concurrent.futures import ThreadPoolExecutor
 
 # Common network services mapped to their default ports
@@ -58,22 +59,49 @@ def save_results(target, ip, open_ports, duration):
         for port, service in open_ports:
             file.write(f"{port:<6} {service}\n")
 
+def parse_ports(port_range):
+    """Convert a port range string into starting and ending ports."""
+    
+    try:
+        ports = port_range.split("-")
+        # Validate the port range before starting the scan
+        if len(ports) != 2:
+            raise ValueError("Invalid port range format. Use 'start-end'.")
+        
+        start_port = int(ports[0])
+        end_port = int(ports[1])
 
-def get_port(prompt):
-    """Prompt the user until a valid TCP port is entered."""
-    while True:
-        try:
-            port = int(input(prompt))
-            if 0 <= port <= 65535:
-                return port
+        if not (0 <= start_port <= 65535 and 0 <= end_port <= 65535):
+            raise ValueError("Port numbers must be between 0 and 65535.")
 
-            print("Please enter a valid port number between 0 and 65535.")
-        except ValueError:
-            print("Invalid input. Please enter a number.")
+        if start_port > end_port:
+            raise ValueError("Start port must be less than or equal to end port.")
+        
+        return start_port, end_port
+    
+    except ValueError:
+        print("Error: Ports must be inn the format start-end, like 20-100.")
+        return None
 
 def main():
-    # Get target information from the user
-    target = input("Enter a host or IP to scan: ")
+    # Configure and parse command-line arguments
+    parser = argparse.ArgumentParser(
+        description="A multithreaded TCP port scanner."
+    )
+    parser.add_argument(
+        "host",
+        help="Hostname or IP address to scan."
+    )
+    parser.add_argument(
+        "-p",
+        "--ports",
+        required=True,
+        help="Port range (example: 20-100)"
+    )
+
+    args = parser.parse_args()
+
+    target = args.host
 
     # Resolve the hostname before scanning
     ip = get_ip(target)
@@ -81,10 +109,15 @@ def main():
     if ip is None:
         exit()
 
-    # Get a valid range of ports to scan from the user
-    start_port = get_port("Enter the starting port: ")
-    end_port = get_port("Enter the ending port: ")
+    # Parse and validate the requested port range
+    port_range = parse_ports(args.ports)
 
+    if port_range is None:
+        return
+    
+    start_port, end_port = port_range
+
+    # Display scan information
     print(f"Target : {target}")
     print(f"IP     : {ip}")
     print(f"Ports  : {start_port}-{end_port}")
@@ -129,5 +162,6 @@ def main():
     save_results(target, ip, open_ports, duration)
     print("\nResults saved to 'scan_results.txt'.")
 
+# Run the scanner only when this file is executed directly
 if __name__ == "__main__":
     main()
