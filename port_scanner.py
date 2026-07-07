@@ -1,5 +1,6 @@
 import socket
 import time
+from concurrent.futures import ThreadPoolExecutor
 
 # Common network services mapped to their default ports
 services = {
@@ -95,11 +96,13 @@ def main():
     # Start timing the scan
     start_time = time.time()
 
-    # Scan every port in the specified range
-    for port in range(start_port, end_port + 1):
+    # Use a thread pool to scan multiple ports simultaneously for improved performance
+    ports = range(start_port, end_port + 1)
 
-        result = scan_port(ip, port)
+    with ThreadPoolExecutor(max_workers=100) as executor:
+        results = executor.map(lambda port: scan_port(ip, port), ports)
 
+    for result in results:
         if result is not None:
             open_ports.append(result)
 
